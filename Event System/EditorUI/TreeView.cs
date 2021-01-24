@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Toolbox.General.DataStructures;
+using Toolbox.DataStructures;
 using UnityEditor;
 using UnityEngine;
 

@@ -10,4 +10,9 @@ namespace Toolbox.EventSystem
 
     [System.Serializable]
     public class Vector2UnityEvent : UnityEvent<Vector2> { }
+
+
+    [System.Serializable]
+    public class GameObjectUnityEvent : UnityEvent<GameObject> { }
+
 }

@@ -3,27 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Couroutines : Singleton<Couroutines>
+namespace Toolbox.General
 {
-    public void RunAfter(Action action, float time) {
-        StartCoroutine(RunAfterTimeCouroutine(action, time));
-    }
-
-    private IEnumerator RunAfterTimeCouroutine(Action action, float time) 
+    public class Couroutines : Singleton<Couroutines>
     {
-        yield return new WaitForSeconds(time);
-        action();
-    }
+        public void RunAfter(Action action, float time) {
+            StartCoroutine(RunAfterTimeCouroutine(action, time));
+        }
 
-    public void RunUntil(Action action, Func<bool> predicate) {
-        StartCoroutine(RunUntilCouroutine(action, predicate));
-    }
-
-    private IEnumerator RunUntilCouroutine(Action action, Func<bool> predicate) 
-    {
-        while(!predicate()) {
+        private IEnumerator RunAfterTimeCouroutine(Action action, float time) {
+            yield return new WaitForSeconds(time);
             action();
-            yield return null;
+        }
+
+        public void RunUntil(Action action, Func<bool> predicate) {
+            StartCoroutine(RunUntilCouroutine(action, predicate));
+        }
+
+        private IEnumerator RunUntilCouroutine(Action action, Func<bool> predicate) {
+            while (!predicate()) {
+                action();
+                yield return null;
+            }
         }
     }
 }

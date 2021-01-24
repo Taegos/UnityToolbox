@@ -5,13 +5,14 @@ using UnityEngine;
 
 namespace Toolbox.EventSystem.Events
 {
-    [CreateAssetMenu(menuName = "Game Event", order = -1)]
+    [CreateAssetMenu]
     public class VoidEvent : ScriptableObject
     {
         private List<VoidEventListener> listeners = new List<VoidEventListener>();
 
         public void Raise()
         {
+            if (listeners.Count == 0) return;
             for (int i = listeners.Count - 1; i >= 0; i--)
                 listeners[i].Raise();
         }

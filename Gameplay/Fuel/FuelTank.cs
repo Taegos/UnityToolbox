@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using Toolbox.EventSystem.Events;
+using Toolbox.General;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class FuelTank : MonoBehaviour
 {
@@ -10,34 +11,35 @@ public class FuelTank : MonoBehaviour
     [SerializeField] private float generationSpeed = 0.05f;
     [SerializeField] private float fuelCanRestoration = 0.3f;
 
-    public delegate void OnTankEmptyDelegate();
-    public event OnTankEmptyDelegate OnTankEmpty;
-    public delegate void OnFuelUpdateDelegate(float value);
-    public event OnFuelUpdateDelegate OnFuelUpdate;
-
-    public Func<bool> ConsumeIf = () => true;
-    public Func<bool> GenerateIf = () => false;
+    public VoidEvent OnTankEmpty;
+    public FloatEvent OnTankUpdate;
 
     private Ticker ticker;
-    public bool IsEmpty => ticker.IsZero;
+    public bool IsEmpty => ticker.IsZeroOrBelow;
 
     void Start() {
-        ticker = TickerSystem.Instance.Create(tankSize);
-        ticker.TickUpSpeed = generationSpeed;
-        ticker.TickDownSpeed = consumptionSpeed;
-        ticker.OnTick += (float value) => OnFuelUpdate?.Invoke(value); 
-        ticker.OnZero += () => OnTankEmpty?.Invoke();
-        ticker.TickDownIf = ConsumeIf;
-        ticker.TickUpIf = GenerateIf;
+        ticker = new Ticker(tankSize);
+        ticker.OnTick += (float value) => OnTankUpdate?.Raise(value); 
+        ticker.OnZeroOrBelow += () => OnTankEmpty?.Raise();
     }
 
-    public void Add(float value) {
+    public void Add(float value) 
+    {
         ticker.Add(value);
+    }
+    
+    public void Generate()
+    {
+        ticker.TickUp(generationSpeed);
+    }
+
+    public void Consume()
+    {
+        ticker.TickDown(consumptionSpeed);
     }
 
     private void OnTriggerEnter(Collider other) {
-        if (other.EnumTag() != Tag.FuelCan) return;
-        ticker.Add(fuelCanRestoration);
+        ticker.Add(fuelCanRestoration); 
         Destroy(other.gameObject);
     }
 }
